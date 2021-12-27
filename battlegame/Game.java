@@ -7,22 +7,29 @@ import java.util.Random;
 public class Game extends JFrame{
     // elementos del juego
     static Ejercito ejercito1, ejercito2;
+    static String reino1, reino2;
     static Soldado[][] tablero;
     static JButton[][] casilleros;
     static JPanel panelInterfaz, panelTitulo, panelJugador1, panelJugador2, panelCampoBatalla; 
-    static JButton mover1, atacar1, rendirSoldado1, rendirEj1, huir1, mover2, atacar2, rendirSoldado2, rendirEj2, huir2;
+    static JButton mover1, atacar1, rendirSoldado1, rendirEj1, huir1, defender1, mover2, atacar2, rendirSoldado2, rendirEj2, huir2, defender2;
     static JLabel labelMensajes, labelTurno;
+    static JTextArea log;
     static JDialog dialogoResultado;
     static int turno=1;
     // 0 inicio turno, 1 seleccion soldado, 2 seleccion accion, 3 seleccion destino y mover, 4 cambiar turno
     static String[] estados = {"Seleccione un soldado de su ejercito","Seleccione la acción a realizar", "Seleccione la posición objetivo o destino", "Turno terminado"};
     static int estado=0; 
     static Posicion posOrigen, posDestino;
+
+    static JFrame principal = new JFrame();
     
-    public Game(){
+    public Game(String r1, String r2){
+        reino1 = r1;
+        reino2 = r2;
         setTitle("Juego de Batallas");
-        setSize(1050, 550);
+        setSize(1100, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        inicializarJuego();
         createContents();
         setVisible(true);
     }
@@ -54,9 +61,28 @@ public class Game extends JFrame{
             else if(evento.getSource()==atacar1 || evento.getSource()==atacar2){
                 if(estado==1){
                     estado=5;
-                    System.out.println("Estado 5 excep");
+                    System.out.println("Estado 5 ataque");
                     labelTurno.setText("Turno del jugador "+ turno + ": " + estados[2]);
                     labelMensajes.setText("");
+                }
+            }
+            else if(evento.getSource()==huir1 || evento.getSource()==huir2){
+                if(estado==6){
+                    posOrigen = posDestino;
+                    System.out.println("Estado 6b huir");
+                    labelTurno.setText("Seleccione la ubicación a la que huir (perdera 1 turno)");
+                    labelMensajes.setText("");
+                    forzarTurno();
+                    estado=2;
+                }
+            }
+            else if(evento.getSource()==defender1 || evento.getSource()==defender2){
+                if(estado==6){
+                    System.out.println("Estado 6b defender");
+                    labelTurno.setText("Turno del jugador "+ turno + ": atacando.");
+                    labelMensajes.setText("");
+                    atacar();
+                    cambiarTurno();
                 }
             }
             else if(evento.getSource()==rendirSoldado1 || evento.getSource()==rendirSoldado2){
@@ -77,7 +103,7 @@ public class Game extends JFrame{
         System.out.println("Inicializando interfaz...");
         // crear elementos aqui
         panelInterfaz = new JPanel(new BorderLayout());
-        panelInterfaz.setPreferredSize(new Dimension(1050,550));
+        panelInterfaz.setPreferredSize(new Dimension(1100,700));
         panelTitulo = new JPanel();
         JPanel panelJugador1 = new JPanel();
         JPanel panelJugador2 = new JPanel();
@@ -148,7 +174,7 @@ public class Game extends JFrame{
         labelJugador1.setFont(new Font("Verdana", Font.PLAIN, 14));
         labelJugador1.setForeground(Color.BLUE);
         labelJugador1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel labelReino1 = new JLabel("Reino: " + ejercito1.getReino());
+        JLabel labelReino1 = new JLabel("Reino: " + reino1);
         labelReino1.setFont(new Font("Verdana", Font.PLAIN, 13));
         labelReino1.setForeground(Color.BLUE);
         labelReino1.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -164,6 +190,10 @@ public class Game extends JFrame{
         huir1.setAlignmentX(Component.CENTER_ALIGNMENT);
         huir1.setEnabled(false);
         huir1.addActionListener(listener);
+        defender1 = new JButton("Defender");
+        defender1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        defender1.setEnabled(false);
+        defender1.addActionListener(listener);
         rendirSoldado1 = new JButton("RendirSoldado");
         rendirSoldado1.setEnabled(false);
         rendirSoldado1.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -182,6 +212,8 @@ public class Game extends JFrame{
         panelJugador1.add(Box.createRigidArea(new Dimension(10, 15)));
         panelJugador1.add(huir1);
         panelJugador1.add(Box.createRigidArea(new Dimension(10, 15)));
+        panelJugador1.add(defender1);
+        panelJugador1.add(Box.createRigidArea(new Dimension(10, 15)));
         panelJugador1.add(rendirSoldado1);
         panelJugador1.add(Box.createRigidArea(new Dimension(10, 15)));
         panelJugador1.add(rendirEj1);
@@ -191,7 +223,7 @@ public class Game extends JFrame{
         labelJugador2.setFont(new Font("Verdana", Font.PLAIN, 14));
         labelJugador2.setForeground(Color.RED);
         labelJugador2.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JLabel labelReino2 = new JLabel("Reino:" + ejercito2.getReino());
+        JLabel labelReino2 = new JLabel("Reino:" + reino2);
         labelReino2.setFont(new Font("Verdana", Font.PLAIN, 13));
         labelReino2.setForeground(Color.RED);
         labelReino2.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -207,6 +239,10 @@ public class Game extends JFrame{
         huir2.setAlignmentX(Component.CENTER_ALIGNMENT);
         huir2.setEnabled(false);
         huir2.addActionListener(listener);
+        defender2 = new JButton("Defender");
+        defender2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        defender2.setEnabled(false);
+        defender2.addActionListener(listener);
         rendirSoldado2 = new JButton("RendirSoldado");
         rendirSoldado2.setEnabled(false);
         rendirSoldado2.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -225,20 +261,28 @@ public class Game extends JFrame{
         panelJugador2.add(Box.createRigidArea(new Dimension(10, 15)));
         panelJugador2.add(huir2);
         panelJugador2.add(Box.createRigidArea(new Dimension(10, 15)));
+        panelJugador2.add(defender2);
+        panelJugador2.add(Box.createRigidArea(new Dimension(10, 15)));
         panelJugador2.add(rendirSoldado2);
         panelJugador2.add(Box.createRigidArea(new Dimension(10, 15)));
         panelJugador2.add(rendirEj2);
+        // panel log
+        log = new JTextArea();
+        log.setRows(5);
+        JScrollPane scroll = new JScrollPane(log);
         // agregar paneles
         panelInterfaz.add(panelTitulo, BorderLayout.NORTH);
         panelInterfaz.add(panelJugador1, BorderLayout.WEST);
         panelInterfaz.add(panelJugador2, BorderLayout.EAST);
         panelInterfaz.add(panelCampoBatalla, BorderLayout.CENTER);
+        panelInterfaz.add(scroll, BorderLayout.SOUTH);
         add(panelInterfaz);
     }
-    public static void main(String[] args){
+    /*public static void main(String[] args){
+        Portada portada = new Portada();
         inicializarJuego();
         Game game = new Game();
-    }
+    }*/
     public static void inicializarJuego(){
         System.out.println("Inicializando juego...");
         ejercito1 = new Ejercito("Francia");
@@ -254,7 +298,7 @@ public class Game extends JFrame{
         System.out.println("Estado 0");
     }
     public static void desplegarEjercito(Ejercito army){
-        System.out.println("Despleando ejercito...");
+        System.out.println("Desplegando ejercito...");
         Random rand = new Random();
         for(int i=0; i<army.getMisSoldados().size(); i++){
             int fil, col;
@@ -270,12 +314,14 @@ public class Game extends JFrame{
     public static void verificarCasilleroOrigen(int fil, int col){
         if(casilleros[fil][col].getText().equals("") && casilleros[fil][col].getIcon()==null){
             System.out.println("-> Casillero vacio");
+            log.append("-> Casillero vacio");
             labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
             labelMensajes.setText("El casillero seleccionado no contiene ningún soldado. Por favor seleccione otro.");
         }
         else{
             if(turno==1 && casilleros[fil][col].getBackground()==Color.BLUE){
                 System.out.println("-> Seleccionado Casillero ejercito1");
+                log.append("-> Seleccionado Casillero ejercito1");
                 establecerCasilleroOrigen(fil, col);
                 habilitarMenuAcciones();
                 estado = 1;
@@ -316,15 +362,26 @@ public class Game extends JFrame{
         System.out.println("verificando casillero enemigo");
         if(turno==1 && casilleros[fil][col].getBackground()==Color.RED){
             establecerCasilleroDestino(fil, col);
-            atacar();
+            //atacar();
             deshabilitarMenuAcciones();
-            cambiarTurno();
+            //cambiarTurno();
+            habilitarMenuRespuesta();
+            estado=6;
+            //forzarTurno();
+            System.out.println("-> Esperando respuesta del oponente...");
+            labelTurno.setText("Esperando la respuesta del oponente");
+            //labelMensajes.setText("El casillero seleccionado no tiene un soldado enemigo");
         }
         else if(turno==2 && casilleros[fil][col].getBackground()==Color.BLUE){
             establecerCasilleroDestino(fil, col);
-            atacar();
+            //atacar();
             deshabilitarMenuAcciones();
-            cambiarTurno();
+            //cambiarTurno();
+            habilitarMenuRespuesta();
+            estado=6;
+            //forzarTurno();
+            System.out.println("-> Esperando respuesta del oponente...");
+            labelTurno.setText("Esperando la respuesta del oponente");
         }
         else{
             System.out.println("-> casillero sin soldado enemigo");
@@ -379,6 +436,22 @@ public class Game extends JFrame{
             rendirEj2.setEnabled(false);
             rendirSoldado2.setEnabled(false);
         }
+    }
+    public static void habilitarMenuRespuesta(){
+        if(turno==1){
+            huir2.setEnabled(true);
+            defender2.setEnabled(true);
+        }
+        else if(turno==2){
+            huir1.setEnabled(true);
+            defender1.setEnabled(true);
+        }
+    }
+    public static void deshabilitarMenuRespuesta(){
+        huir2.setEnabled(false);
+        defender2.setEnabled(false);
+        huir1.setEnabled(false);
+        defender1.setEnabled(false);
     }
     public static boolean verificarEnemigoCercano(){
         System.out.println("Verificando enemigo cercano...");
@@ -480,6 +553,7 @@ public class Game extends JFrame{
             if(ataqueRestante>=atacado.getVidaActual()){
                 System.out.println("- Eliminar soldado atacado");
                 eliminarSoldado(posDestino);
+                moverSoldado();
             }
             else{
                 System.out.println("- Eliminar soldado atacante");
@@ -490,6 +564,7 @@ public class Game extends JFrame{
             if(atacante.getVidaActual()>=atacado.getVidaActual()){
                 System.out.println("- Eliminar soldado atacado");
                 eliminarSoldado(posDestino);
+                moverSoldado();
             }
             else{
                 System.out.println("- Eliminar soldado atacante");
@@ -504,6 +579,7 @@ public class Game extends JFrame{
             else{
                 System.out.println("- Eliminar soldado atacado");
                 eliminarSoldado(posDestino);
+                moverSoldado();
             }
         }
         estado = 4;
@@ -546,6 +622,26 @@ public class Game extends JFrame{
             labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
             labelMensajes.setText("");
         }
+        deshabilitarMenuRespuesta();
+    }
+    public static void forzarTurno(){
+        verificarEjercito();
+        if(estado == 6){
+            System.out.println("Forzando turno");
+            if(turno==1){
+                turno = 2;
+                System.out.println("Turno 2");
+            }
+            else if(turno==2){
+                System.out.println("Turno 1");
+                turno = 1;
+            }
+            estado = 1;
+            System.out.println("Estado 1 forzado");
+            //labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
+            //labelMensajes.setText("");
+        }
+        deshabilitarMenuRespuesta();
     }
     public static void rendirEjercito(){
         System.out.println("Rendir ejercito... " + turno);
@@ -585,7 +681,7 @@ public class Game extends JFrame{
         JButton botonOk = new JButton("SALIR");
         botonOk.addActionListener ( new ActionListener(){
             public void actionPerformed( ActionEvent e ){
-                System.out.println("Finalizar programa");
+                System.out.println("Finalizar juego");
                 System.exit(0);
             }
         });
