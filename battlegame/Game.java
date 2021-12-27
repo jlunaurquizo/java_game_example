@@ -3,6 +3,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
 
 public class Game extends JFrame{
     // elementos del juego
@@ -101,7 +104,7 @@ public class Game extends JFrame{
     }
     private void createContents(){
         System.out.println("Inicializando interfaz...");
-        // crear elementos aqui
+        // panel interfaz principal
         panelInterfaz = new JPanel(new BorderLayout());
         panelInterfaz.setPreferredSize(new Dimension(1100,700));
         panelTitulo = new JPanel();
@@ -277,6 +280,7 @@ public class Game extends JFrame{
         panelInterfaz.add(panelCampoBatalla, BorderLayout.CENTER);
         panelInterfaz.add(scroll, BorderLayout.SOUTH);
         add(panelInterfaz);
+        log.append("Turno del jugador "+turno+"\n");
     }
     /*public static void main(String[] args){
         Portada portada = new Portada();
@@ -294,8 +298,6 @@ public class Game extends JFrame{
         tablero = new Soldado[10][10];
         desplegarEjercito(ejercito1);
         desplegarEjercito(ejercito2);
-        System.out.println("Turno 1");
-        System.out.println("Estado 0");
     }
     public static void desplegarEjercito(Ejercito army){
         System.out.println("Desplegando ejercito...");
@@ -314,22 +316,24 @@ public class Game extends JFrame{
     public static void verificarCasilleroOrigen(int fil, int col){
         if(casilleros[fil][col].getText().equals("") && casilleros[fil][col].getIcon()==null){
             System.out.println("-> Casillero vacio");
-            log.append("-> Casillero vacio");
+            log.append("-> Selecciono un casillero vacio\n");
             labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
             labelMensajes.setText("El casillero seleccionado no contiene ningún soldado. Por favor seleccione otro.");
         }
         else{
             if(turno==1 && casilleros[fil][col].getBackground()==Color.BLUE){
                 System.out.println("-> Seleccionado Casillero ejercito1");
-                log.append("-> Seleccionado Casillero ejercito1");
+                log.append("-> Seleccionado Casillero ejercito1 \n");
                 establecerCasilleroOrigen(fil, col);
                 habilitarMenuAcciones();
                 estado = 1;
                 labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
+                log.append("Turno del jugador "+ turno + ": " + estados[estado]+"\n");
                 labelMensajes.setText("");
             }
             else if(turno==2 && casilleros[fil][col].getBackground()==Color.RED){
                 System.out.println("-> Seleccionado Casillero ejercito2");
+                log.append("-> Seleccionado Casillero ejercito2 \n");
                 establecerCasilleroOrigen(fil, col);
                 habilitarMenuAcciones();
                 System.out.println("Estado 1");
@@ -339,6 +343,7 @@ public class Game extends JFrame{
             }
             else{
                 System.out.println("-> Casillero con soldado de otro ejercito");
+                log.append("-> Selecciono un casillero con soldado de otro ejercito.\n");
                 labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
                 labelMensajes.setText("El casillero no contiene un soldado de su ejercito");
             }
@@ -347,6 +352,7 @@ public class Game extends JFrame{
     public static void verificarCasilleroDestino(int fil, int col){
         if(casilleros[fil][col].getText().equals("") && casilleros[fil][col].getIcon()==null){
             System.out.println("-> casillero vacio");
+            log.append("-> selecciono un casillero vacio.\n");
             establecerCasilleroDestino(fil,col);
             moverSoldado();
             deshabilitarMenuAcciones();
@@ -354,37 +360,35 @@ public class Game extends JFrame{
         }
         else{
             System.out.println("-> casillero ocupado");
+            log.append("-> Selecciono un casillero ocupado.\n");
             labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
             labelMensajes.setText("El casillero seleccionado no esta disponible");
         }
     }
     public static void verificarCasilleroEnemigo(int fil, int col){
         System.out.println("verificando casillero enemigo");
+        log.append("Verificando casillero enemigo...\n");
         if(turno==1 && casilleros[fil][col].getBackground()==Color.RED){
             establecerCasilleroDestino(fil, col);
-            //atacar();
             deshabilitarMenuAcciones();
-            //cambiarTurno();
             habilitarMenuRespuesta();
             estado=6;
-            //forzarTurno();
             System.out.println("-> Esperando respuesta del oponente...");
+            log.append("-> Esperando respuesta del oponente...\n");
             labelTurno.setText("Esperando la respuesta del oponente");
-            //labelMensajes.setText("El casillero seleccionado no tiene un soldado enemigo");
         }
         else if(turno==2 && casilleros[fil][col].getBackground()==Color.BLUE){
             establecerCasilleroDestino(fil, col);
-            //atacar();
             deshabilitarMenuAcciones();
-            //cambiarTurno();
             habilitarMenuRespuesta();
             estado=6;
-            //forzarTurno();
             System.out.println("-> Esperando respuesta del oponente...");
+            log.append("-> Esperando respuesta del oponente...\n");
             labelTurno.setText("Esperando la respuesta del oponente");
         }
         else{
             System.out.println("-> casillero sin soldado enemigo");
+            log.append("-> Selecciono un casillero sin soldado enemigo.\n");
             labelTurno.setText("Turno del jugador "+ turno + ": " + estados[estado]);
             labelMensajes.setText("El casillero seleccionado no tiene un soldado enemigo");
         }
@@ -404,6 +408,7 @@ public class Game extends JFrame{
     public static void habilitarMenuAcciones(){
         if(turno==1){
             System.out.println("Habilitar menu acciones J1");
+            log.append("Habilitar menu de acciones de Jugador 1\n");
             mover1.setEnabled(true);
             if(verificarEnemigoCercano()){
                 atacar1.setEnabled(true);
@@ -413,6 +418,7 @@ public class Game extends JFrame{
         }
         else if(turno==2){
             System.out.println("Habilitar menu acciones J2");
+            log.append("Habilitar menu de acciones de Jugador 2\n");
             mover2.setEnabled(true);
             if(verificarEnemigoCercano()){
                 atacar2.setEnabled(true);
@@ -424,6 +430,7 @@ public class Game extends JFrame{
     public static void deshabilitarMenuAcciones(){
         if(turno==1){
             System.out.println("Deshabilitando menu acciones J1");
+            log.append("Deshabilitar menu de acciones de Jugador 1\n");
             mover1.setEnabled(false);
             atacar1.setEnabled(false);
             rendirEj1.setEnabled(false);
@@ -431,6 +438,7 @@ public class Game extends JFrame{
         }
         else if(turno==2){
             System.out.println("Deshabilitando menu acciones J2");
+            log.append("Deshabilitar menu de acciones de Jugador 2\n");
             mover2.setEnabled(false);
             atacar2.setEnabled(false);
             rendirEj2.setEnabled(false);
@@ -439,15 +447,18 @@ public class Game extends JFrame{
     }
     public static void habilitarMenuRespuesta(){
         if(turno==1){
+            log.append("Habilitar menu de respuesta de Jugador 2\n");
             huir2.setEnabled(true);
             defender2.setEnabled(true);
         }
         else if(turno==2){
+            log.append("Habilitar menu de respuesta de Jugador 1\n");
             huir1.setEnabled(true);
             defender1.setEnabled(true);
         }
     }
     public static void deshabilitarMenuRespuesta(){
+        log.append("Deshabilitar menu de respuesta...\n");
         huir2.setEnabled(false);
         defender2.setEnabled(false);
         huir1.setEnabled(false);
@@ -455,6 +466,7 @@ public class Game extends JFrame{
     }
     public static boolean verificarEnemigoCercano(){
         System.out.println("Verificando enemigo cercano...");
+        log.append("Verificando enemigo cercano...\n");
         boolean result = false;
         Posicion[] posiciones = new Posicion[8];
         posiciones[0] = new Posicion(posOrigen.getFila()-1, posOrigen.getColumna()-1);
@@ -467,27 +479,33 @@ public class Game extends JFrame{
         posiciones[7] = new Posicion(posOrigen.getFila()+1, posOrigen.getColumna()+1);
         if(turno==1){
             System.out.print("Posiciones a atacar de 2: ");
+            log.append("Posiciones posibles de atacar: ");
             for(int i=0; i<8; i++){
                 if(posiciones[i].getFila()>0 && posiciones[i].getFila()<10 && posiciones[i].getColumna()>0 && posiciones[i].getColumna()<10){
                     if( (casilleros[posiciones[i].getFila()][posiciones[i].getColumna()]).getBackground()==Color.RED ){
                         System.out.print(posiciones[i].getFila()+","+posiciones[i].getColumna()+" - ");
+                        log.append(posiciones[i].getFila()+","+posiciones[i].getColumna()+" - ");
                         result = true;
                     }
                 }
             }
             System.out.print("\n");
+            log.append("\n");
         }
         else if(turno==2){
             System.out.print("Posiciones a atacar de 1: ");
+            log.append("Posiciones posibles de atacar: ");
             for(int i=0; i<8; i++){
                 if(posiciones[i].getFila()>0 && posiciones[i].getFila()<10 && posiciones[i].getColumna()>0 && posiciones[i].getColumna()<10){
                     if( (casilleros[posiciones[i].getFila()][posiciones[i].getColumna()]).getBackground()==Color.BLUE ){
                         System.out.print(posiciones[i].getFila()+","+posiciones[i].getColumna()+" - ");
+                        log.append(posiciones[i].getFila()+","+posiciones[i].getColumna()+" - ");
                         result = true;
                     }
                 }
             }
             System.out.print("\n");
+            log.append("\n");
         }
         System.out.println(result + " es posible atacar");
         return result;
@@ -496,6 +514,7 @@ public class Game extends JFrame{
         if(estado == 3){
             // Actualizar array tablero
             System.out.println("Mover de " + posOrigen.getFila() + ", " + posOrigen.getColumna() + " a " + posDestino.getFila() + ", " + posDestino.getColumna());
+            log.append("Mover soldado de " + posOrigen.getFila() + ", " + posOrigen.getColumna() + " a " + posDestino.getFila() + ", " + posDestino.getColumna() + "\n");
             System.out.println("Actualizando array tablero");
             //   Colocar copia del soldado en destino
             tablero[posDestino.getFila()][posDestino.getColumna()] = tablero[posOrigen.getFila()][posOrigen.getColumna()];
@@ -526,6 +545,7 @@ public class Game extends JFrame{
     }
     public static void cambiarPosicionSoldado(){
         System.out.println("Cambiando posicion de soldado en ejercito");
+        log.append("-> Cambiando posicion de soldado en ejercito\n");
         int indice;
         if(turno == 1){
             indice = ejercito1.getMisSoldados().indexOf(tablero[posDestino.getFila()][posDestino.getColumna()]);
@@ -542,6 +562,7 @@ public class Game extends JFrame{
     }
     public static void atacar(){
         System.out.println("Atacar...");
+        log.append("Atacar...\n");
         //obtener información de ambos soldados
         Soldado atacante = tablero[posOrigen.getFila()][posOrigen.getColumna()];
         Soldado atacado = tablero[posDestino.getFila()][posDestino.getColumna()];
@@ -552,32 +573,38 @@ public class Game extends JFrame{
             int ataqueRestante = atacante.getNivelAtaque() - atacado.getNivelDefensa();
             if(ataqueRestante>=atacado.getVidaActual()){
                 System.out.println("- Eliminar soldado atacado");
+                log.append("-> Eliminando soldado atacado\n");
                 eliminarSoldado(posDestino);
                 moverSoldado();
             }
             else{
                 System.out.println("- Eliminar soldado atacante");
+                log.append("-> Eliminando soldado atacante\n");
                 eliminarSoldado(posOrigen);
             }
         }
         else if(atacante.getNivelAtaque()==atacado.getNivelDefensa()){
             if(atacante.getVidaActual()>=atacado.getVidaActual()){
                 System.out.println("- Eliminar soldado atacado");
+                log.append("-> Eliminando soldado atacado\n");
                 eliminarSoldado(posDestino);
                 moverSoldado();
             }
             else{
                 System.out.println("- Eliminar soldado atacante");
+                log.append("-> Eliminando soldado atacado\n");
                 eliminarSoldado(posOrigen);
             }
         }
         else{
             if(atacado.getNivelAtaque()>atacante.getNivelDefensa()){
                 System.out.println("- Eliminar soldado atacante");
+                log.append("-> Eliminando soldado atacado\n");
                 eliminarSoldado(posOrigen);
             }
             else{
                 System.out.println("- Eliminar soldado atacado");
+                log.append("-> Eliminando soldado atacado\n");
                 eliminarSoldado(posDestino);
                 moverSoldado();
             }
@@ -609,12 +636,15 @@ public class Game extends JFrame{
         verificarEjercito();
         if(estado == 4){
             System.out.println("Cambiando turno");
+            log.append("Cambio de turno...\n");
             if(turno==1){
                 turno = 2;
                 System.out.println("Turno 2");
+                log.append("Turno 2\n");
             }
             else if(turno==2){
                 System.out.println("Turno 1");
+                log.append("Turno 1\n");
                 turno = 1;
             }
             estado = 0;
@@ -628,12 +658,15 @@ public class Game extends JFrame{
         verificarEjercito();
         if(estado == 6){
             System.out.println("Forzando turno");
+            log.append("Forzando el Turno para huir...\n");
             if(turno==1){
                 turno = 2;
                 System.out.println("Turno 2");
+                log.append("Turno 2\n");
             }
             else if(turno==2){
                 System.out.println("Turno 1");
+                log.append("Turno 1\n");
                 turno = 1;
             }
             estado = 1;
@@ -645,6 +678,7 @@ public class Game extends JFrame{
     }
     public static void rendirEjercito(){
         System.out.println("Rendir ejercito... " + turno);
+        log.append("Rendición de ejercito " + turno + "!!!\n");
         for(int i=0; i<10; i++){
             for(int j=0; j<10; j++){
                 if(turno==1){
@@ -676,12 +710,24 @@ public class Game extends JFrame{
         dialogoResultado.setLayout(new FlowLayout());
         JLabel labelResultado = new JLabel("El jugador " + ganador + " gano la batalla!!!");
         System.out.println("El jugador " + ganador + " gano la batalla!!!");
+        log.append("El jugador " + ganador + " gano la batalla!!!\n");
         labelResultado.setFont(new Font("Verdana", Font.PLAIN, 16));
         labelResultado.setAlignmentX(Component.CENTER_ALIGNMENT);
         JButton botonOk = new JButton("SALIR");
         botonOk.addActionListener ( new ActionListener(){
             public void actionPerformed( ActionEvent e ){
                 System.out.println("Finalizar juego");
+                log.append("Juego finalizado");
+                try {
+                    //File logFile = new File("log.txt");
+                    FileWriter logFile = new FileWriter("log.txt");
+                    logFile.write(log.getText());
+                    logFile.close();
+                } catch (IOException err) {
+                    System.out.println("Ocurrio un error al crear el archivo.");
+                    err.printStackTrace();
+                }
+
                 System.exit(0);
             }
         });
@@ -692,12 +738,15 @@ public class Game extends JFrame{
     }
     public static void verificarEjercito(){
         System.out.println("Verificar ejercitos (c.soldados): "+ejercito1.getMisSoldados().size()+"-"+ejercito2.getMisSoldados().size());
+        log.append("Verificar ejercitos (cantidad de soldados): 1:"+ejercito1.getMisSoldados().size()+" vs 2:"+ejercito2.getMisSoldados().size()+"\n");
         if(ejercito1.getMisSoldados().size()==0){
             System.out.println("Ejercito 1: vacio");
+            log.append("Ejercito 1: vacio.\n");
             mostrarResultado(2);
         }
         else if(ejercito2.getMisSoldados().size()==0){
             System.out.println("Ejercito 2 vacio");
+            log.append("Ejercito 2: vacio.\n");
             mostrarResultado(1);
         }
     }
