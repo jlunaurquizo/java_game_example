@@ -5,23 +5,70 @@ Verificando enemigo cercano...
 Posiciones posibles de atacar: 
 Turno del jugador 1: Seleccione la acción a realizar
 -> selecciono un casillero vacio.
-Mover soldado de 0, 0 a 1, 1
+Mover soldado de 1, 2 a 2, 3
 -> Cambiando posicion de soldado en ejercito
 Deshabilitar menu de acciones de Jugador 1
-Verificar ejercitos (cantidad de soldados): 1:3 vs 2:4
+Verificar ejercitos (cantidad de soldados): 1:2 vs 2:6
+Cambio de turno...
+Turno 2
+Deshabilitar menu de respuesta...
+-> Selecciono un casillero vacio
+-> Selecciono un casillero con soldado de otro ejercito.
+-> Seleccionado Casillero ejercito2 
+Habilitar menu de acciones de Jugador 2
+Verificando enemigo cercano...
+Posiciones posibles de atacar: 2,3 - 
+Verificando casillero enemigo...
+Deshabilitar menu de acciones de Jugador 2
+Habilitar menu de respuesta de Jugador 1
+-> Esperando respuesta del oponente...
+Verificar ejercitos (cantidad de soldados): 1:2 vs 2:6
+Forzando el Turno para huir...
+Turno 1
+Deshabilitar menu de respuesta...
+-> selecciono un casillero vacio.
+Mover soldado de 2, 3 a 1, 0
+-> Cambiando posicion de soldado en ejercito
+Deshabilitar menu de acciones de Jugador 1
+Verificar ejercitos (cantidad de soldados): 1:2 vs 2:6
 Cambio de turno...
 Turno 2
 Deshabilitar menu de respuesta...
 -> Seleccionado Casillero ejercito2 
 Habilitar menu de acciones de Jugador 2
 Verificando enemigo cercano...
-Posiciones posibles de atacar: 1,1 - 
-Verificando casillero enemigo...
+Posiciones posibles de atacar: 
+-> selecciono un casillero vacio.
+Mover soldado de 2, 4 a 1, 1
+-> Cambiando posicion de soldado en ejercito
 Deshabilitar menu de acciones de Jugador 2
-Habilitar menu de respuesta de Jugador 1
+Verificar ejercitos (cantidad de soldados): 1:2 vs 2:6
+Cambio de turno...
+Turno 1
+Deshabilitar menu de respuesta...
+-> Seleccionado Casillero ejercito1 
+Habilitar menu de acciones de Jugador 1
+Verificando enemigo cercano...
+Posiciones posibles de atacar: 1,1 - 
+Turno del jugador 1: Seleccione la acción a realizar
+Verificando casillero enemigo...
+Deshabilitar menu de acciones de Jugador 1
+Habilitar menu de respuesta de Jugador 2
 -> Esperando respuesta del oponente...
 Atacar...
 -> Eliminando soldado atacado
+Verificar ejercitos (cantidad de soldados): 1:2 vs 2:5
+Cambio de turno...
+Turno 2
+Deshabilitar menu de respuesta...
+-> Selecciono un casillero con soldado de otro ejercito.
+-> Selecciono un casillero con soldado de otro ejercito.
+-> Selecciono un casillero con soldado de otro ejercito.
+-> Seleccionado Casillero ejercito2 
+Habilitar menu de acciones de Jugador 2
+Verificando enemigo cercano...
+Posiciones posibles de atacar: 
+Deshabilitar menu de acciones de Jugador 2
 Verificar ejercitos (cantidad de soldados): 1:2 vs 2:4
 Cambio de turno...
 Turno 1
@@ -31,6 +78,7 @@ Habilitar menu de acciones de Jugador 1
 Verificando enemigo cercano...
 Posiciones posibles de atacar: 
 Turno del jugador 1: Seleccione la acción a realizar
+-> Selecciono un casillero ocupado.
 Rendición de ejercito 1!!!
 El jugador 2 gano la batalla!!!
 Juego finalizado
